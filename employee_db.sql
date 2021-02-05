@@ -24,3 +24,14 @@ CREATE TABLE department (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
 name VARCHAR(30)
 );
+
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Margaret", "Thatcher", 2, 1);
+
+INSERT INTO role (title, salary, department_id)
+VALUES ('Generalist', 75000, 1);
+
+INSERT INTO department (name)
+VALUES ('Human Resources');
+
+select * from role;
