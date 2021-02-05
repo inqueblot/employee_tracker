@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const cTable = require('console.table');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -13,8 +14,8 @@ connection.connect((err) => {
     console.log('connected as id ' + connection.threadId);
 });
 
-connection.query("SELECT * FROM employee WHERE id=1", function (error, results) {
+connection.query("SELECT title, salary FROM role", function (error, results) {
     if (error) throw error;
-    console.log('the solution is: ', results)
+    console.table(results)
 });
 connection.end();
