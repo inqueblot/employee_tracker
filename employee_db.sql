@@ -1,0 +1,23 @@
+CREATE DATABASE employee_db;
+
+USE DATABASE employee_db;
+
+CREATE TABLE employee (
+    id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    role_id INTEGER FOREIGN KEY REFERENCES role(id)
+    manager_id INTEGER FOREIGN KEY REFERENCES role(id)
+);
+
+CREATE TABLE role (
+id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+title VARCHAR(30),
+salary DECIMAL,
+department_id INTEGER FOREIGN KEY REFERENCES department(id)
+);
+
+CREATE TABLE department (
+id INTEGER AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(30)
+);
