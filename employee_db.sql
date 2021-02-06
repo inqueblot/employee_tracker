@@ -34,4 +34,7 @@ VALUES ('Generalist', 75000, 1);
 INSERT INTO department (name)
 VALUES ('Human Resources');
 
-select * from role;
+SELECT first_name, last_name, title
+FROM  employee
+INNER JOIN role
+ON employee.role_id = role.id;
