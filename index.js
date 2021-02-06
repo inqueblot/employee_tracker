@@ -1,10 +1,10 @@
 const inquirer = require('inquirer');
-const connect = require('./db_connection')
-const roleArr = ['Manager', 'Generalist']
-const managerArr = ['Richard Branson']
+const connection = require('./db_connection')
+const roleArr = [1, 2]
+const managerArr = [1]
 console.log('EMPLOYEE DATABASE')
 
-// connect();
+console.log(connection)
 
 
 inquirer.prompt([
@@ -64,5 +64,12 @@ const addEmployee = function () {
                 message: "Who is the employee's direct report?",
                 choices: managerArr,
             }
-        ])
-}
+        ]).then((answers) => {
+            console.log(answers)
+            connection.query("INSERT INTO employee SET ?", answers, function (err, res) {
+                if (err) throw err;
+                // console.table(results)
+            });
+            connection.end();
+        })
+};
