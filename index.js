@@ -15,7 +15,7 @@ const popRole = function () {
             roleArr.push(element.id)
         });
     });
-}
+};
 //populates the departmentArr
 const popDepartment = function () {
     connection.query('SELECT id FROM department', function (err, res) {
@@ -36,11 +36,12 @@ const popManager = function () {
 };
 
 const tableDisplay = function () {
-    connection.query('SELECT * FROM employee', function (err, res) {
-        if (err) throw err;
-        console.table(res);
-        initQuestions();
-    });
+    connection.query('SELECT first_name, last_name, title, salary FROM  employee INNER JOIN role ON employee.role_id = role.id ORDER BY last_name',
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            initQuestions();
+        });
 
 
 };
