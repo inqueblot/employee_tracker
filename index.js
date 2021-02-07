@@ -6,7 +6,7 @@ const managerArr = []
 const departmentArr = []
 
 
-console.log('EMPLOYEE DATABASE')
+
 //populates the roleArr
 const popRole = function () {
     connection.query('SELECT id FROM role', function (err, res) {
@@ -36,7 +36,7 @@ const popManager = function () {
 };
 
 const tableDisplay = function () {
-    connection.query('SELECT first_name, last_name, title, salary FROM  employee INNER JOIN role ON employee.role_id = role.id ORDER BY last_name',
+    connection.query('SELECT first_name, last_name, title, salary, name FROM  employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id ORDER BY last_name',
         function (err, res) {
             if (err) throw err;
             console.table(res);
@@ -52,14 +52,37 @@ const initQuestions = function () {
             type: 'list',
             name: 'action',
             message: 'What would you like to do?',
-            choices: ['View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'Quit']
+            choices: ['Add', 'View', 'Update', 'Quit']
         }
     ]).then((answers) => {
         console.log(answers.action);
         switch (answers.action) {
-            case 'View All Employees':
-                console.log('some employees')
+            case 'Add':
+                addQuestions();
                 break;
+            case 'View':
+                //addRole();
+                break;
+            case 'Update':
+                //addDepartment();
+                break;
+            case 'Quit':
+                connection.end();
+        }
+    });
+};
+
+const addQuestions = function () {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to do?',
+            choices: ['Add Employee', 'Add Role', 'Add Department', 'Quit']
+        }
+    ]).then((answers) => {
+        console.log(answers.action);
+        switch (answers.action) {
             case 'Add Employee':
                 addEmployee();
                 break;
@@ -68,9 +91,6 @@ const initQuestions = function () {
                 break;
             case 'Add Department':
                 addDepartment();
-                break;
-            case 'Update Employee Role':
-                console.log('update on');
                 break;
             case 'Quit':
                 connection.end();
@@ -141,11 +161,13 @@ const addEmployee = function () {
 };
 
 const addRole = function () {
+    //populates department choices
     connection.query('SELECT * FROM department', function (err, res) {
         if (err) throw err;
         console.table(res);
         roleQuestions();
     });
+    //generates new role
     const roleQuestions = function () {
         inquirer
             .prompt([
@@ -211,7 +233,8 @@ const addDepartment = function () {
         });
 };
 
-
+//initial population
+console.log('EMPLOYEE DATABASE')
 popDepartment();
 popManager();
 popRole();
