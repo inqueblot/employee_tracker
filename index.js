@@ -320,12 +320,39 @@ const viewRole = function () {
 //viewEmployee is already defined as tableDisplay()
 
 const changeRole = function () {
-    connection.query('SELECT first_name, last_name, title, salary, name FROM  employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id ORDER BY last_name',
+    connection.query('SELECT employee.id, first_name, last_name, title FROM  employee LEFT JOIN role ON employee.role_id = role.id ORDER BY last_name',
         function (err, res) {
             if (err) throw err;
             console.table(res);
-            initQuestions();
+            roleTable();
         });
+
+    const roleTable = function () {
+        connection.query('SELECT id, title FROM  role',
+            function (err, res) {
+                if (err) throw err;
+                console.table(res);
+                changeRoleQuestions();
+            });
+    };
+
+    const changeRoleQuestions = function () {
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'id',
+                    message: 'Which employee are you updating?',
+                    choices: employeeArr,
+                },
+                {
+                    type: 'list',
+                    name: 'role_id',
+                    message: 'What will their new role be?',
+                    choices: roleArr,
+                }
+            ]).then()
+    }
 }
 
 //initial population
@@ -333,4 +360,5 @@ console.log('EMPLOYEE DATABASE')
 popDepartment();
 popManager();
 popRole();
+popEmployee();
 tableDisplay();
