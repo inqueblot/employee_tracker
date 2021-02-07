@@ -61,7 +61,7 @@ const initQuestions = function () {
                 addQuestions();
                 break;
             case 'View':
-                //addRole();
+                viewQuestions();
                 break;
             case 'Update':
                 //addDepartment();
@@ -77,8 +77,8 @@ const addQuestions = function () {
         {
             type: 'list',
             name: 'action',
-            message: 'What would you like to do?',
-            choices: ['Add Employee', 'Add Role', 'Add Department', 'Quit']
+            message: 'What would you like to add?',
+            choices: ['Add Employee', 'Add Role', 'Add Department', 'Go Back', 'Quit']
         }
     ]).then((answers) => {
         console.log(answers.action);
@@ -91,6 +91,38 @@ const addQuestions = function () {
                 break;
             case 'Add Department':
                 addDepartment();
+                break;
+            case 'Go Back':
+                initQuestions();
+                break;
+            case 'Quit':
+                connection.end();
+        }
+    });
+};
+
+const viewQuestions = function () {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to view?',
+            choices: ['Employee', 'Role', 'Department', 'Go Back', 'Quit']
+        }
+    ]).then((answers) => {
+        console.log(answers.action);
+        switch (answers.action) {
+            case 'Employee':
+                addQuestions();
+                break;
+            case 'Role':
+                //addRole();
+                break;
+            case 'Department':
+                viewDepartment();
+                break;
+            case 'Go Back':
+                initQuestions();
                 break;
             case 'Quit':
                 connection.end();
@@ -231,6 +263,22 @@ const addDepartment = function () {
             popDepartment();
             tableDisplay();
         });
+};
+
+const viewDepartment = function () {
+    connection.query('SELECT * FROM department', function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        initQuestions();
+    });
+};
+
+const viewRole = function () {
+    connection.query('SELECT * FROM role', function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        initQuestions();
+    });
 };
 
 //initial population
