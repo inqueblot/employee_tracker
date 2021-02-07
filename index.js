@@ -1,32 +1,50 @@
 const inquirer = require('inquirer');
 const connection = require('./db_connection')
+const ConsoleTab = require('console.table')
 const roleArr = [1, 2]
 const managerArr = [1]
+
+
 console.log('EMPLOYEE DATABASE')
 
-console.log(connection)
+
+const tableDisplay = function () {
+    connection.query('SELECT * FROM employee', function (err, res) {
+        if (err) throw err;
+        console.table(res);
+
+        initQuestions();
+
+    });
 
 
-inquirer.prompt([
-    {
-        type: 'list',
-        name: 'action',
-        message: 'What would you like to do?',
-        choices: ['View All Employees', 'Add Employee', 'Update Employee Role']
-    }
-]).then((answers) => {
-    console.log(answers.action);
-    switch (answers.action) {
-        case 'View All Employees':
-            console.log('some employees')
-            break;
-        case 'Add Employee':
-            addEmployee();
-            break;
-        case 'Update Employee Role':
-            console.log('update on')
-    }
-});
+};
+
+tableDisplay();
+
+
+const initQuestions = function () {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to do?',
+            choices: ['View All Employees', 'Add Employee', 'Update Employee Role']
+        }
+    ]).then((answers) => {
+        console.log(answers.action);
+        switch (answers.action) {
+            case 'View All Employees':
+                console.log('some employees')
+                break;
+            case 'Add Employee':
+                addEmployee();
+                break;
+            case 'Update Employee Role':
+                console.log('update on')
+        }
+    });
+};
 
 const addEmployee = function () {
     inquirer
@@ -70,6 +88,6 @@ const addEmployee = function () {
                 if (err) throw err;
                 // console.table(results)
             });
-            connection.end();
-        })
+            tableDisplay();
+        });
 };
