@@ -3,6 +3,7 @@ const connection = require('./db_connection')
 const ConsoleTab = require('console.table');
 const roleArr = [1, 2]
 const managerArr = [1]
+const departmentArr = [1, 2, 3, 4]
 
 
 console.log('EMPLOYEE DATABASE')
@@ -24,7 +25,7 @@ const initQuestions = function () {
             type: 'list',
             name: 'action',
             message: 'What would you like to do?',
-            choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'Quit']
+            choices: ['View All Employees', 'Add Employee', 'Add Role', 'Update Employee Role', 'Quit']
         }
     ]).then((answers) => {
         console.log(answers.action);
@@ -34,6 +35,9 @@ const initQuestions = function () {
                 break;
             case 'Add Employee':
                 addEmployee();
+                break;
+            case 'Add Role':
+                addRole();
                 break;
             case 'Update Employee Role':
                 console.log('update on');
@@ -85,6 +89,46 @@ const addEmployee = function () {
             connection.query("INSERT INTO employee SET ?", answers, function (err, res) {
                 if (err) throw err;
                 // console.table(results)
+            });
+            tableDisplay();
+        });
+};
+
+const addRole = function () {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: "What is title of the role?",
+                validate: function (value) {
+                    if (!value)
+                        return "please enter a name"
+                    return true
+                }
+
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: "What is the yearly salary for this role?",
+                validate: function (value) {
+                    var pass = parseInt(value);
+                    if (!Number.isInteger(pass))
+                        return "please enter a number"
+                    return true
+                }
+            },
+            {
+                type: 'list',
+                name: 'department_id',
+                message: "What department does this role belong to?",
+                choices: departmentArr,
+            },
+        ]).then((answers) => {
+            console.log(answers)
+            connection.query("INSERT INTO role SET ?", answers, function (err, res) {
+                if (err) throw err;
             });
             tableDisplay();
         });
