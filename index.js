@@ -113,10 +113,10 @@ const viewQuestions = function () {
         console.log(answers.action);
         switch (answers.action) {
             case 'Employee':
-                addQuestions();
+                tableDisplay();
                 break;
             case 'Role':
-                //addRole();
+                viewRole();
                 break;
             case 'Department':
                 viewDepartment();
