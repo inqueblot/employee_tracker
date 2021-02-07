@@ -1,13 +1,25 @@
 const inquirer = require('inquirer');
 const connection = require('./db_connection')
 const ConsoleTab = require('console.table');
-const roleArr = [1, 2]
+const roleArr = []
 const managerArr = [1]
-const departmentArr = [1, 2, 3, 4]
+const departmentArr = []
 
 
 console.log('EMPLOYEE DATABASE')
 
+connection.query('SELECT id FROM role', function (err, res) {
+    if (err) throw err;
+    res.forEach(element => {
+        roleArr.push(element.id)
+    });
+});
+connection.query('SELECT id FROM department', function (err, res) {
+    if (err) throw err;
+    res.forEach(element => {
+        departmentArr.push(element.id)
+    });
+});
 
 const tableDisplay = function () {
     connection.query('SELECT * FROM employee', function (err, res) {
@@ -25,7 +37,7 @@ const initQuestions = function () {
             type: 'list',
             name: 'action',
             message: 'What would you like to do?',
-            choices: ['View All Employees', 'Add Employee', 'Add Role', 'Update Employee Role', 'Quit']
+            choices: ['View All Employees', 'Add Employee', 'Add Role', 'Add Department', 'Update Employee Role', 'Quit']
         }
     ]).then((answers) => {
         console.log(answers.action);
@@ -39,6 +51,9 @@ const initQuestions = function () {
             case 'Add Role':
                 addRole();
                 break;
+            case 'Add Department':
+                addDepartment();
+                break;
             case 'Update Employee Role':
                 console.log('update on');
                 break;
@@ -49,49 +64,57 @@ const initQuestions = function () {
 };
 
 const addEmployee = function () {
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                name: 'first_name',
-                message: "What is the employee's first name?",
-                validate: function (value) {
-                    if (!value)
-                        return "please enter a name"
-                    return true
-                }
+    connection.query('SELECT id, title FROM role', function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        empQuestions();
+    });
 
-            },
-            {
-                type: 'input',
-                name: 'last_name',
-                message: "What is the employee's last name?",
-                validate: function (value) {
-                    if (!value)
-                        return "please enter a name"
-                    return true
+    const empQuestions = function () {
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'first_name',
+                    message: "What is the employee's first name?",
+                    validate: function (value) {
+                        if (!value)
+                            return "please enter a name"
+                        return true
+                    }
+
+                },
+                {
+                    type: 'input',
+                    name: 'last_name',
+                    message: "What is the employee's last name?",
+                    validate: function (value) {
+                        if (!value)
+                            return "please enter a name"
+                        return true
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'role_id',
+                    message: "What is the employee's job title?",
+                    choices: roleArr,
+                },
+                {
+                    type: 'list',
+                    name: 'manager_id',
+                    message: "Who is the employee's direct report?",
+                    choices: managerArr,
                 }
-            },
-            {
-                type: 'list',
-                name: 'role_id',
-                message: "What is the employee's job title?",
-                choices: roleArr,
-            },
-            {
-                type: 'list',
-                name: 'manager_id',
-                message: "Who is the employee's direct report?",
-                choices: managerArr,
-            }
-        ]).then((answers) => {
-            console.log(answers)
-            connection.query("INSERT INTO employee SET ?", answers, function (err, res) {
-                if (err) throw err;
-                // console.table(results)
+            ]).then((answers) => {
+                console.log(answers)
+                connection.query("INSERT INTO employee SET ?", answers, function (err, res) {
+                    if (err) throw err;
+                    // console.table(results)
+                });
+                tableDisplay();
             });
-            tableDisplay();
-        });
+    };
 };
 
 const addRole = function () {
@@ -128,6 +151,28 @@ const addRole = function () {
         ]).then((answers) => {
             console.log(answers)
             connection.query("INSERT INTO role SET ?", answers, function (err, res) {
+                if (err) throw err;
+            });
+            tableDisplay();
+        });
+};
+
+const addDepartment = function () {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: "What is the name of the department?",
+                validate: function (value) {
+                    if (!value)
+                        return "please enter a name"
+                    return true
+                }
+            },
+        ]).then((answers) => {
+            console.log(answers)
+            connection.query("INSERT INTO department SET ?", answers, function (err, res) {
                 if (err) throw err;
             });
             tableDisplay();
