@@ -4,6 +4,7 @@ const ConsoleTab = require('console.table');
 const roleArr = []
 const managerArr = []
 const departmentArr = []
+const employeeArr = []
 
 
 
@@ -31,6 +32,15 @@ const popManager = function () {
         if (err) throw err;
         res.forEach(element => {
             managerArr.push(element.id)
+        });
+    });
+};
+
+const popEmployee = function () {
+    connection.query('SELECT id FROM employee', function (err, res) {
+        if (err) throw err;
+        res.forEach(element => {
+            employeeArr.push(element.id)
         });
     });
 };
@@ -64,7 +74,7 @@ const initQuestions = function () {
                 viewQuestions();
                 break;
             case 'Update':
-                //addDepartment();
+                updateQuestions();
                 break;
             case 'Quit':
                 connection.end();
@@ -120,6 +130,32 @@ const viewQuestions = function () {
                 break;
             case 'Department':
                 viewDepartment();
+                break;
+            case 'Go Back':
+                initQuestions();
+                break;
+            case 'Quit':
+                connection.end();
+        }
+    });
+};
+
+const updateQuestions = function () {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'action',
+            message: 'What would you like to update?',
+            choices: ["Employee's Role", "Employee's Manager", 'Go Back', 'Quit']
+        }
+    ]).then((answers) => {
+        console.log(answers.action);
+        switch (answers.action) {
+            case "Employee's Role":
+                changeRole();
+                break;
+            case "Employee's Manager":
+                // viewRole();
                 break;
             case 'Go Back':
                 initQuestions();
@@ -280,6 +316,17 @@ const viewRole = function () {
         initQuestions();
     });
 };
+
+//viewEmployee is already defined as tableDisplay()
+
+const changeRole = function () {
+    connection.query('SELECT first_name, last_name, title, salary, name FROM  employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id ORDER BY last_name',
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            initQuestions();
+        });
+}
 
 //initial population
 console.log('EMPLOYEE DATABASE')
