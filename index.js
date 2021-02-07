@@ -155,7 +155,7 @@ const updateQuestions = function () {
                 changeRole();
                 break;
             case "Employee's Manager":
-                // viewRole();
+                changeManager();
                 break;
             case 'Go Back':
                 initQuestions();
@@ -351,9 +351,56 @@ const changeRole = function () {
                     message: 'What will their new role be?',
                     choices: roleArr,
                 }
-            ]).then()
-    }
-}
+            ]).then((answers) => {
+
+                connection.query(`UPDATE employee SET role_id = ${answers.role_id} WHERE id = ${answers.id}`, function (err, res) {
+                    if (err) throw err;
+                });
+                tableDisplay();
+            });
+    };
+};
+
+const changeManager = function () {
+    connection.query('SELECT employee.id, first_name, last_name, title FROM  employee LEFT JOIN role ON employee.role_id = role.id ORDER BY last_name',
+        function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            managerTab();
+        });
+
+    const managerTab = function () {
+        connection.query('SELECT id, first_name, last_name FROM employee WHERE role_id = 1', function (err, res) {
+            if (err) throw err;
+            console.table(res)
+            changeManagerQuestions();
+        })
+    };
+
+    const changeManagerQuestions = function () {
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'id',
+                    message: 'Which employee are you updating?',
+                    choices: employeeArr,
+                },
+                {
+                    type: 'list',
+                    name: 'manager_id',
+                    message: 'Who will their new manager?',
+                    choices: managerArr,
+                }
+            ]).then((answers) => {
+
+                connection.query(`UPDATE employee SET manager_id = ${answers.manager_id} WHERE id = ${answers.id}`, function (err, res) {
+                    if (err) throw err;
+                });
+                tableDisplay();
+            });
+    };
+};
 
 //initial population
 console.log('EMPLOYEE DATABASE')
